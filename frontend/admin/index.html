@@ -1,0 +1,1135 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventrack - Gestión de Inventario</title>
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.min.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">I</div>
+        <div>
+          <strong>Inventrack</strong>
+          <div class="small">Gestión de Inventario</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+  <div class="nav-section-title">General</div>
+  <a href="#" class="nav-link active" data-section="dashboard">
+    <i class="nav-icon fa-solid fa-gauge"></i> Dashboard
+  </a>
+  <a href="#" class="nav-link" data-section="productos">
+    <i class="nav-icon fa-solid fa-box"></i> Productos
+  </a>
+  <a href="#" class="nav-link" data-section="categorias">
+    <i class="nav-icon fa-solid fa-tags"></i> Categorías
+  </a>
+  <a href="#" class="nav-link" data-section="proveedores">
+    <i class="nav-icon fa-solid fa-truck"></i> Proveedores
+  </a>
+
+  <div class="nav-section-title">Movimientos</div>
+  <a href="#" class="nav-link" data-section="movimientos">
+    <i class="nav-icon fa-solid fa-exchange-alt"></i> Historial
+  </a>
+  <a href="#" class="nav-link" data-section="solicitudes">
+    <i class="nav-icon fa-solid fa-file-invoice"></i> Solicitudes
+  </a>
+  <a href="#" class="nav-link" data-section="devoluciones">
+    <i class="nav-icon fa-solid fa-undo"></i> Devoluciones
+  </a>
+  <a href="#" class="nav-link" data-section="pedidos">
+    <i class="nav-icon fa-solid fa-cart-shopping"></i> Pedidos de Compra
+  </a>
+
+  <div class="nav-section-title">Análisis</div>
+  <a href="#" class="nav-link" data-section="reportes">
+    <i class="nav-icon fa-solid fa-chart-line"></i> Reportes
+  </a>
+  <a href="#" class="nav-link" data-section="alertas">
+  <i class="nav-icon fa-solid fa-bell"></i> Alertas
+  <span id="alertsCount" class="status-badge status-low" style="margin-left:auto; padding: 2px 8px; font-size: 0.7rem;">0</span>
+</a>
+
+  <div class="nav-section-title">Administración</div>
+  <a href="#" class="nav-link" data-section="usuarios">
+    <i class="nav-icon fa-solid fa-users"></i> Usuarios
+    <a href="#" class="nav-link" data-section="userHistory">
+  <i class="nav-icon fa-solid fa-history"></i> Historial Usuarios
+</a>
+  </a>
+  <a href="#" class="nav-link" data-section="logs">
+  <i class="nav-icon fa-solid fa-history"></i> Registro Actividad
+</a>
+  <a href="#" class="nav-link" data-section="configuracion">
+    <i class="nav-icon fa-solid fa-cog"></i> Configuración
+  </a>
+</nav>
+      
+    </aside>
+
+    <main class="main">
+      <header class="header">
+        <div>
+          <h1 class="page-title">Dashboard</h1>
+          <p class="small">Resumen general del inventario</p>
+        </div>
+        <div class="header-right">
+  <div class="search">
+    <i class="fa-solid fa-search"></i>
+    <input type="text" placeholder="Buscar productos...">
+  </div> 
+         <div class="profile">
+  <div class="profile-avatar" id="profileAvatar" onclick="toggleProfileDropdown()">
+    A
+  </div>
+  <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+    <!-- Perfil -->
+    <div class="profile-header">
+      <div class="avatar-container">
+        <div class="avatar-placeholder" id="avatarPlaceholder">A</div>
+        <img id="avatarImage" src="" alt="Foto de Perfil" style="display: none; width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+      </div>
+      <div class="profile-info">
+        <div id="profileName" class="profile-name">Admin</div>
+        <div id="profileEmail" class="profile-email">admin@inventrack.com</div>
+      </div>
+    </div>
+
+    <!-- Opciones -->
+    <div class="profile-options">
+      <button class="dropdown-item" onclick="toggleThemeFromProfile()">
+        <i class="fa-solid fa-moon"></i> Modo Oscuro
+      </button>
+      <button class="dropdown-item" onclick="showHelp()">
+        <i class="fa-solid fa-question-circle"></i> Ayuda
+      </button>
+      <button class="dropdown-item" onclick="openEditProfileModal()">
+        <i class="fa-solid fa-user-edit"></i> Editar Perfil
+      </button>
+      <hr class="divider">
+      <button class="dropdown-item logout-btn" onclick="logout()">
+        <i class="fa-solid fa-sign-out-alt"></i> Cerrar Sesión
+      </button>
+    </div>
+  </div>
+</div>
+        </div>
+      </header>
+
+      <!-- Dashboard -->
+      <section id="dashboardSection" class="section-card">
+        <div class="quick-actions">
+          <button class="btn btn-primary" onclick="openModal('entryModal')"><i class="fa-solid fa-plus"></i> Entrada</button>
+          <button class="btn btn-danger" onclick="openModal('exitModal')"><i class="fa-solid fa-minus"></i> Salida</button>
+          <button class="btn btn-success" onclick="openProductModalForNew()"><i class="fa-solid fa-box"></i> Nuevo Producto</button>
+        </div>
+
+        <div class="grid-4">
+          <div class="card metric-card productos">
+            <div class="card-icon"><i class="fa-solid fa-boxes"></i></div>
+            <div class="metric-value" id="metricProducts">0</div>
+            <h3 class="card-title">Productos</h3>
+            <p class="card-desc">Total en inventario</p>
+          </div>
+          <div class="card metric-card entradas">
+            <div class="card-icon"><i class="fa-solid fa-arrow-down"></i></div>
+            <div class="metric-value" id="metricEntries">0</div>
+            <h3 class="card-title">Entradas Hoy</h3>
+            <p class="card-desc">Productos ingresados</p>
+          </div>
+          <div class="card metric-card salidas">
+            <div class="card-icon"><i class="fa-solid fa-arrow-up"></i></div>
+            <div class="metric-value" id="metricExits">0</div>
+            <h3 class="card-title">Salidas Hoy</h3>
+            <p class="card-desc">Productos retirados</p>
+          </div>
+          <div class="card metric-card inventario">
+            <div class="card-icon"><i class="fa-solid fa-warehouse"></i></div>
+            <div class="metric-value" id="metricInventory">0</div>
+            <h3 class="card-title">Valor Inventario</h3>
+            <p class="card-desc">Valor total en stock</p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 24px;">
+          <h3 style="margin-top:0;font-size:1.1rem;margin-bottom:16px;">Movimientos Recientes</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Producto</th>
+                  <th>Cantidad</th>
+                  <th>Responsable</th>
+                </tr>
+              </thead>
+              <tbody id="recentMovementsTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Productos -->
+      <section id="productosSection" style="display:none" class="section-card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title"><i class="fa-solid fa-box"></i> Gestión de Productos</h2>
+            <p class="small">Administra los productos de tu inventario</p>
+          </div>
+          <button class="btn btn-success" onclick="openProductModalForNew()"><i class="fa-solid fa-plus"></i> Nuevo Producto</button>
+        </div>
+
+        <!-- Filtros para Productos -->
+        <div class="card" style="margin-bottom:24px;">
+          <h3 style="margin-top:0;font-size:1.1rem;margin-bottom:16px;">Filtros de Productos</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="productCategoryFilter">Categoría</label>
+              <select id="productCategoryFilter" class="form-select" onchange="renderProducts()">
+                <option value="">Todas</option>
+                <!-- Categories will be populated here by JS -->
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="minStockFilter">Stock Mínimo</label>
+              <input id="minStockFilter" type="number" min="0" class="form-input" oninput="renderProducts()">
+            </div>
+            <div class="form-group">
+              <label for="maxStockFilter">Stock Máximo</label>
+              <input id="maxStockFilter" type="number" min="0" class="form-input" oninput="renderProducts()">
+            </div>
+          </div>
+          <button class="btn btn-ghost" onclick="clearProductFilters()" style="margin-top:10px;">
+            <i class="fa-solid fa-filter-circle-xmark"></i> Limpiar Filtros
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Proveedor</th>
+                <th>Stock</th>
+                <th>Ubicación</th>
+                <th>Precio</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="productsTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Categorías -->
+      <section id="categoriasSection" style="display:none" class="section-card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title"><i class="fa-solid fa-tags"></i> Gestión de Categorías</h2>
+            <p class="small">Administra las categorías de tus productos</p>
+          </div>
+          <button class="btn btn-success" onclick="openModal('categoryModal')"><i class="fa-solid fa-plus"></i> Nueva Categoría</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="categoriesTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Proveedores -->
+      <section id="proveedoresSection" style="display:none" class="section-card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title"><i class="fa-solid fa-truck"></i> Gestión de Proveedores</h2>
+            <p class="small">Gestiona la información de contacto de tus proveedores.</p>
+          </div>
+          <button class="btn btn-success" onclick="openModal('supplierModal')"><i class="fa-solid fa-plus"></i> Nuevo Proveedor</button>
+        </div>
+
+        <!-- Filtros para Proveedores -->
+        <div class="card" style="margin-bottom:24px;">
+          <h3 style="margin-top:0;font-size:1.1rem;margin-bottom:16px;">Filtros de Proveedores</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="supplierFilter">Buscar Proveedor</label>
+              <input id="supplierFilter" type="text" class="form-input" oninput="renderSuppliers()" placeholder="Nombre, Contacto o Teléfono">
+            </div>
+          </div>
+          <button class="btn btn-ghost" onclick="clearSupplierFilters()" style="margin-top:10px;">
+            <i class="fa-solid fa-filter-circle-xmark"></i> Limpiar Filtros
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Contacto (Email)</th>
+                <th>Teléfono</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="suppliersTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Movimientos -->
+      <section id="movimientosSection" style="display:none" class="section-card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title"><i class="fa-solid fa-exchange-alt"></i> Movimientos de Inventario</h2>
+            <p class="small">Consulta entradas y salidas de productos</p>
+          </div>
+          <div class="quick-actions">
+            <button class="btn btn-primary" onclick="openModal('entryModal')"><i class="fa-solid fa-arrow-down"></i> Registrar Entrada</button>
+            <button class="btn btn-danger" onclick="openModal('exitModal')"><i class="fa-solid fa-arrow-up"></i> Registrar Salida</button>
+          </div>
+        </div>
+
+        <!-- Filtros para Movimientos -->
+        <div class="card" style="margin-bottom:24px;">
+          <h3 style="margin-top:0;font-size:1.1rem;margin-bottom:16px;">Filtros de Historial</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="movementTypeFilter">Tipo de Movimiento</label>
+              <select id="movementTypeFilter" class="form-select" onchange="renderMovements()">
+                <option value="">Todos</option>
+                <option value="entrada">Entrada</option>
+                <option value="salida">Salida</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="movementResponsibleFilter">Responsable</label>
+              <input id="movementResponsibleFilter" type="text" class="form-input" oninput="renderMovements()" placeholder="Nombre del responsable">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="movementStartDateFilter">Fecha Inicio</label>
+              <input id="movementStartDateFilter" type="date" class="form-input" onchange="renderMovements()">
+            </div>
+            <div class="form-group">
+              <label for="movementEndDateFilter">Fecha Fin</label>
+              <input id="movementEndDateFilter" type="date" class="form-input" onchange="renderMovements()">
+            </div>
+          </div>
+          <button class="btn btn-ghost" onclick="clearMovementFilters()" style="margin-top:10px;">
+            <i class="fa-solid fa-filter-circle-xmark"></i> Limpiar Filtros
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>SKU</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Responsable</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody id="movimientosTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Solicitudes -->
+      <section id="solicitudesSection" style="display:none" class="section-card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title"><i class="fa-solid fa-file-invoice"></i> Solicitudes de Stock</h2>
+            <p class="small">Gestiona y consulta las solicitudes de productos</p>
+          </div>
+          <button class="btn btn-success" onclick="openModal('requestModal')"><i class="fa-solid fa-plus"></i> Nueva Solicitud</button>
+        </div>
+
+        <!-- Filtros para Solicitudes -->
+        <div class="card" style="margin-bottom:24px;">
+          <h3 style="margin-top:0;font-size:1.1rem;margin-bottom:16px;">Filtros de Solicitudes</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="requestProductFilter">Producto (Nombre/SKU)</label>
+              <input id="requestProductFilter" type="text" class="form-input" oninput="renderRequests()">
+            </div>
+            <div class="form-group">
+              <label for="requestResponsibleFilter">Responsable</label>
+              <input id="requestResponsibleFilter" type="text" class="form-input" oninput="renderRequests()">
+            </div>
+            <div class="form-group">
+              <label for="requestStatusFilter">Estado</label>
+              <select id="requestStatusFilter" class="form-select" onchange="renderRequests()">
+                <option value="">Todos</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Aprobada">Aprobada</option>
+                <option value="Rechazada">Rechazada</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="requestStartDateFilter">Fecha Inicio</label>
+              <input id="requestStartDateFilter" type="date" class="form-input" onchange="renderRequests()">
+            </div>
+            <div class="form-group">
+              <label for="requestEndDateFilter">Fecha Fin</label>
+              <input id="requestEndDateFilter" type="date" class="form-input" onchange="renderRequests()">
+            </div>
+          </div>
+          <button class="btn btn-ghost" onclick="clearRequestFilters()" style="margin-top:10px;">
+            <i class="fa-solid fa-filter-circle-xmark"></i> Limpiar Filtros
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+              <th>Fecha</th>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Responsable</th>
+              <th>Justificación</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="requestsTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Devoluciones -->
+    <section id="devolucionesSection" style="display:none" class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title"><i class="fa-solid fa-undo"></i> Gestión de Devoluciones</h2>
+          <p class="small">Registra y consulta los productos devueltos</p>
+        </div>
+        <button class="btn btn-success" onclick="openModal('returnModal')"><i class="fa-solid fa-plus"></i> Nueva Devolución</button>
+      </div>
+
+      <!-- Filtros para Devoluciones -->
+      <div class="card" style="margin-bottom:24px;">
+        <h3 style="margin-top:0;font-size:1.1rem;margin-bottom:16px;">Filtros de Devoluciones</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="returnProductFilter">Producto (Nombre/SKU)</label>
+            <input id="returnProductFilter" type="text" class="form-input" oninput="renderReturns()">
+          </div>
+          <div class="form-group">
+            <label for="returnReasonFilter">Razón de Devolución</label>
+            <input id="returnReasonFilter" type="text" class="form-input" oninput="renderReturns()">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="returnStartDateFilter">Fecha Inicio</label>
+            <input id="returnStartDateFilter" type="date" class="form-input" onchange="renderReturns()">
+          </div>
+          <div class="form-group">
+            <label for="returnEndDateFilter">Fecha Fin</label>
+            <input id="returnEndDateFilter" type="date" class="form-input" onchange="renderReturns()">
+          </div>
+        </div>
+        <button class="btn btn-ghost" onclick="clearReturnFilters()" style="margin-top:10px;">
+          <i class="fa-solid fa-filter-circle-xmark"></i> Limpiar Filtros
+        </button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Razón</th>
+              <th>Responsable</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="returnsTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Pedidos de Compra -->
+    <section id="pedidosSection" style="display:none" class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title"><i class="fa-solid fa-cart-shopping"></i> Pedidos de Compra</h2>
+          <p class="small">Gestiona los pedidos realizados a tus proveedores</p>
+        </div>
+        <button class="btn btn-success" onclick="openModal('purchaseOrderModal')"><i class="fa-solid fa-plus"></i> Nuevo Pedido</button>
+      </div>
+
+      <!-- Filtros para Pedidos -->
+      <div class="card" style="margin-bottom:24px;">
+        <h3 style="margin-top:0;font-size:1.1rem;margin-bottom:16px;">Filtros de Pedidos</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="poProductFilter">Producto (Nombre/SKU)</label>
+            <input id="poProductFilter" type="text" class="form-input" oninput="renderPurchaseOrders()">
+          </div>
+          <div class="form-group">
+            <label for="poSupplierFilter">Proveedor</label>
+            <select id="poSupplierFilter" class="form-select" onchange="renderPurchaseOrders()">
+              <option value="">Todos</option>
+              <!-- Suppliers will be populated here -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="poStatusFilter">Estado</label>
+            <select id="poStatusFilter" class="form-select" onchange="renderPurchaseOrders()">
+              <option value="">Todos</option>
+              <option value="Creado">Creado</option>
+              <option value="Enviado">Enviado</option>
+              <option value="Recibido Parcial">Recibido Parcial</option>
+              <option value="Recibido Completo">Recibido Completo</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="poStartDateFilter">Fecha Inicio</label>
+            <input id="poStartDateFilter" type="date" class="form-input" onchange="renderPurchaseOrders()">
+          </div>
+          <div class="form-group">
+            <label for="poEndDateFilter">Fecha Fin</label>
+            <input id="poEndDateFilter" type="date" class="form-input" onchange="renderPurchaseOrders()">
+          </div>
+        </div>
+        <button class="btn btn-ghost" onclick="clearPurchaseOrderFilters()" style="margin-top:10px;">
+          <i class="fa-solid fa-filter-circle-xmark"></i> Limpiar Filtros
+        </button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Producto</th>
+              <th>Cantidad Pedida</th>
+              <th>Cantidad Recibida</th>
+              <th>Proveedor</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="purchaseOrdersTbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Reportes -->
+    <section id="reportesSection" style="display:none" class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title"><i class="fa-solid fa-chart-line"></i> Reportes</h2>
+          <p class="small">Genera y exporta informes clave del inventario</p>
+        </div>
+      </div>
+
+      <div class="grid-4">
+        <div class="card reporte-card">
+          <div class="reporte-icon bg-primary">
+            <i class="fa-solid fa-boxes"></i>
+          </div>
+          <div class="reporte-content">
+            <h3>Productos en Stock</h3>
+            <p id="reportTotalProducts">0</p>
+          </div>
+        </div>
+        <div class="card reporte-card">
+          <div class="reporte-icon bg-purple">
+            <i class="fa-solid fa-clipboard-list"></i>
+          </div>
+          <div class="reporte-content">
+            <h3>Productos con Bajo Stock</h3>
+            <p id="reportLowStock">0</p>
+          </div>
+        </div>
+        <div class="card reporte-card">
+          <div class="reporte-icon bg-success">
+            <i class="fa-solid fa-exchange-alt"></i>
+          </div>
+          <div class="reporte-content">
+            <h3>Movimientos del Mes</h3>
+            <p id="reportMonthlyMovements">0</p>
+          </div>
+        </div>
+        <div class="card reporte-card">
+          <div class="reporte-icon bg-warning">
+            <i class="fa-solid fa-coins"></i>
+          </div>
+          <div class="reporte-content">
+            <h3>Valor Total del Inventario</h3>
+            <p id="reportValue" style="font-size: 1.5rem; font-weight: bold;">$0</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:24px;">
+        <h3 style="margin-top:0;font-size:1.1rem;margin-bottom:16px;">Stock por Categoría (Gráfico)</h3>
+        <div class="chart-container">
+          <canvas id="stockByCategoryChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:24px;">
+        <h3 style="margin-top:0;font-size:1.1rem;margin-bottom:16px;">Movimientos Mensuales</h3>
+        <div class="chart-container">
+          <canvas id="monthlyMovementsChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:24px;">
+        <h3 style="margin-top:0;font-size:1.1rem;margin-bottom:16px;">Top 5 Productos con Más Movimientos</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Entradas</th>
+                <th>Salidas</th>
+                <th>Total Movimientos</th>
+              </tr>
+            </thead>
+            <tbody id="topProductsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Alertas -->
+    <section id="alertasSection" style="display:none" class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title"><i class="fa-solid fa-bell"></i> Alertas de Stock</h2>
+          <p class="small">Productos que necesitan tu atención</p>
+        </div>
+      </div>
+      <div class="alerts-card card">
+        <div class="alerts-header">
+          <h3><i class="fa-solid fa-bell icon"></i> Alertas de Stock</h3>
+        </div>
+        <div class="alerts-container" id="alertsContainer"></div>
+      </div>
+    </section>
+
+    <!-- Usuarios -->
+    <section id="usuariosSection" style="display:none" class="section-card">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title"><i class="fa-solid fa-users"></i> Gestión de Usuarios</h2>
+      <p class="small">Gestiona los usuarios y roles del sistema</p>
+    </div>
+    <button class="btn btn-success" onclick="openUserModalForNew()"><i class="fa-solid fa-plus"></i> Nuevo Usuario</button>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="usersTbody"></tbody>
+    </table>
+  </div>
+</section>
+
+    
+
+    <section id="userHistorySection" style="display:none" class="section-card">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title"><i class="fa-solid fa-history"></i> Historial de Usuarios</h2>
+      <p class="small">Registro de acciones relacionadas con usuarios</p>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha y Hora</th>
+          <th>Tipo de Acción</th>
+          <th>Detalles</th>
+        </tr>
+      </thead>
+      <tbody id="userHistoryTbody"></tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- Registro de Actividad -->
+<section id="logsSection" style="display:none" class="section-card">
+  <div class="section-header">
+    <div>
+      <h2 class="section-title"><i class="fa-solid fa-history"></i> Registro de Actividad</h2>
+      <p class="small">Historial de todas las acciones importantes en el sistema.</p>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha y Hora</th>
+          <th>Usuario</th>
+          <th>Tipo de Acción</th>
+          <th>Detalles</th>
+        </tr>
+      </thead>
+      <tbody id="logsTbody"></tbody>
+    </table>
+  </div>
+</section>
+    <!-- Configuración -->
+    <section id="configuracionSection" style="display:none" class="section-card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title"><i class="fa-solid fa-cog"></i> Configuración</h2>
+          <p class="small">Personaliza el comportamiento de tu inventario</p>
+        </div>
+      </div>
+      <div class="settings-grid">
+        <div class="settings-card card">
+          <div class="card-header">
+            <div class="card-icon inventario"><i class="fas fa-warehouse"></i></div>
+            <h3 class="card-title">Inventario</h3>
+          </div>
+          <div class="form-group">
+            <label>Umbral de Stock Bajo (Global)</label>
+            <input id="cfgLowStockThreshold" type="number" min="0" class="form-input" placeholder="Cantidad global">
+          </div>
+          <div class="form-group">
+            <label>Notificar Bajo Stock</label>
+            <select id="cfgNotifyLowStock" class="form-select">
+              <option value="true">Sí</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+        </div>
+        <div class="settings-card card">
+          <div class="card-header">
+            <div class="card-icon notify"><i class="fas fa-bell"></i></div>
+            <h3 class="card-title">Notificaciones</h3>
+          </div>
+          <div class="form-group">
+            <label>Activar Notificaciones</label>
+            <select id="cfgNotifications" class="form-select">
+              <option value="true">Sí</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+        </div>
+        <div class="settings-card card">
+          <div class="card-header">
+            <div class="card-icon backup"><i class="fas fa-download"></i></div>
+            <h3 class="card-title">Respaldo de Datos</h3>
+          </div>
+          <p>Exporta tu base de datos para mantenerla segura.</p>
+          <div class="backup-actions">
+            <button class="btn btn-primary" onclick="createBackup()">Crear Respaldo (JSON)</button>
+          </div>
+          <div class="backup-info" id="backupInfo">Último respaldo: Ninguno</div>
+        </div>
+        
+      </div>
+      <div class="settings-footer">
+        <button class="btn btn-primary" onclick="saveSettings()"><i class="fa-solid fa-save"></i> Guardar Toda la Configuración</button>
+        <button class="btn btn-ghost" onclick="resetSettings()">↩ Resetear Configuración</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+
+
+<!-- Modales -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <div class="modal-header">
+      <strong id="productModalTitle">Nuevo Producto</strong>
+      <button class="btn btn-ghost" onclick="closeModal('productModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form onsubmit="event.preventDefault(); saveProductModal();">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input id="m_pName" type="text" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label>SKU (Código único)</label>
+          <input id="m_pSku" type="text" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label>Categoría</label>
+          <select id="m_pCategory" class="form-select" required></select>
+        </div>
+        <div class="form-group">
+          <label>Proveedor</label>
+          <select id="m_pSupplier" class="form-select" required></select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Stock</label>
+            <input id="m_pStock" type="number" min="0" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label>Precio (COP)</label>
+            <input id="m_pPrice" type="number" min="0" step="0.01" class="form-input" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Ubicación en Almacén</label>
+          <input id="m_pLocation" type="text" class="form-input" placeholder="Ej: Estantería A, Nivel 3">
+        </div>
+        <!-- New field -->
+        <div class="form-group">
+          <label>Umbral Stock Bajo</label>
+          <input id="m_pLowStockThreshold" type="number" min="0" class="form-input" placeholder="Usar global si vacío">
+        </div>
+        <!-- New field -->
+      </div>
+      <input type="hidden" id="m_pIndex">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('productModal')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar Producto</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="productHistoryModal">
+  <div class="modal" style="max-width: 800px;">
+    <div class="modal-header">
+      <strong>Historial de Movimientos</strong>
+      <button class="btn btn-ghost" onclick="closeModal('productHistoryModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Tipo</th>
+              <th>Cantidad</th>
+              <th>Responsable</th>
+            </tr>
+          </thead>
+          <tbody id="productHistoryTbody"></tbody>
+        </table>
+      </div>
+      <div id="productHistoryEmpty" style="text-align:center; padding: 20px; color: var(--muted); display:none;">
+        No hay movimientos para este producto.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-ghost" onclick="closeModal('productHistoryModal')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="categoryModal">
+  <div class="modal">
+    <div class="modal-header">
+      <strong>Nueva Categoría</strong>
+      <button class="btn btn-ghost" onclick="closeModal('categoryModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form onsubmit="event.preventDefault(); saveCategoryModal();">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input id="m_cName" type="text" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea id="m_cDesc" class="form-textarea"></textarea>
+        </div>
+      </div>
+      <input type="hidden" id="m_cIndex">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('categoryModal')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar Categoría</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="supplierModal">
+  <div class="modal">
+    <div class="modal-header">
+      <strong>Nuevo Proveedor</strong>
+      <button class="btn btn-ghost" onclick="closeModal('supplierModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form onsubmit="event.preventDefault(); saveSupplierModal();">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input id="m_sName" type="text" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label>Contacto (Email)</label>
+          <input id="m_sContact" type="email" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input id="m_sPhone" type="tel" class="form-input">
+        </div>
+      </div>
+      <input type="hidden" id="m_sIndex">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('supplierModal')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar Proveedor</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="entryModal">
+  <div class="modal">
+    <div class="modal-header">
+      <strong>Registrar Entrada</strong>
+      <button class="btn btn-ghost" onclick="closeModal('entryModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form onsubmit="event.preventDefault(); submitMovement('entryModal', 'entrada');">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Producto</label>
+          <select id="m_eProduct" class="form-select" required></select>
+        </div>
+        <div class="form-group">
+          <label>Cantidad</label>
+          <input id="m_eQty" type="number" min="1" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label>Responsable</label>
+          <input id="m_eResp" class="form-input" value="Admin" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('entryModal')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Registrar Entrada</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="exitModal">
+  <div class="modal">
+    <div class="modal-header">
+      <strong>Registrar Salida</strong>
+      <button class="btn btn-ghost" onclick="closeModal('exitModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form onsubmit="event.preventDefault(); submitMovement('exitModal', 'salida');">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Producto</label>
+          <select id="m_xProduct" class="form-select" required></select>
+        </div>
+        <div class="form-group">
+          <label>Cantidad</label>
+          <input id="m_xQty" type="number" min="1" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label>Responsable</label>
+          <input id="m_xResp" class="form-input" value="Admin" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('exitModal')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Registrar Salida</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="requestModal">
+  <div class="modal">
+    <div class="modal-header">
+      <strong id="requestModalTitle">Nueva Solicitud</strong>
+      <button class="btn btn-ghost" onclick="closeModal('requestModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form onsubmit="event.preventDefault(); saveRequestModal();">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Producto</label>
+          <select id="m_reqProductName" class="form-select" required></select>
+        </div>
+        <div class="form-group">
+          <label>Cantidad</label>
+          <input id="m_reqQty" type="number" min="1" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label>Responsable</label>
+          <input id="m_reqResponsible" class="form-input" readonly>
+        </div>
+        <div class="form-group">
+          <label>Justificación</label>
+          <textarea id="m_reqJustification" class="form-input" readonly></textarea>
+        </div>
+        <div class="form-group">
+          <label>Estado</label>
+          <select id="m_reqStatus" class="form-select">
+            <option value="Pendiente">Pendiente</option>
+            <option value="Aprobada">Aprobada</option>
+            <option value="Rechazada">Rechazada</option>
+          </select>
+        </div>
+        <input type="hidden" id="m_reqId">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('requestModal')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Actualizar Solicitud</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="returnModal">
+  <div class="modal">
+    <div class="modal-header">
+      <strong>Registrar Devolución</strong>
+      <button class="btn btn-ghost" onclick="closeModal('returnModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form onsubmit="event.preventDefault(); saveReturnModal();">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Producto</label>
+          <select id="m_retProduct" class="form-select" required></select>
+        </div>
+        <div class="form-group">
+          <label>Cantidad</label>
+          <input id="m_retQty" type="number" min="1" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label>Razón</label>
+          <input id="m_retReason" type="text" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label>Responsable</label>
+          <input id="m_retResponsible" class="form-input" value="Admin">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('returnModal')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Registrar Devolución</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="purchaseOrderModal">
+  <div class="modal">
+    <div class="modal-header">
+      <strong id="purchaseOrderModalTitle">Nuevo Pedido de Compra</strong>
+      <button class="btn btn-ghost" onclick="closeModal('purchaseOrderModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form onsubmit="event.preventDefault(); savePurchaseOrderModal();">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Producto</label>
+          <select id="m_poProduct" class="form-select" required></select>
+        </div>
+        <div class="form-group">
+          <label>Cantidad Pedida</label>
+          <input id="m_poQtyOrdered" type="number" min="1" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label>Proveedor</label>
+          <select id="m_poSupplier" class="form-select" required></select>
+        </div>
+        <div class="form-group">
+          <label>Estado del Pedido</label>
+          <select id="m_poStatus" class="form-select">
+            <option value="Creado">Creado</option>
+            <option value="Enviado">Enviado</option>
+            <option value="Recibido Parcial">Recibido Parcial</option>
+            <option value="Recibido Completo">Recibido Completo</option>
+            <option value="Cancelado">Cancelado</option>
+          </select>
+        </div>
+      </div>
+      <input type="hidden" id="m_poId">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('purchaseOrderModal')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar Pedido</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- Modal de Usuarios -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal">
+    <div class="modal-header">
+      <strong id="userModalTitle">Nuevo Usuario</strong>
+      <button class="btn btn-ghost" onclick="closeModal('userModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form onsubmit="event.preventDefault(); saveUserModal();">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input id="m_uName" type="text" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input id="m_uEmail" type="email" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label>Rol</label>
+          <select id="m_uRole" class="form-select" required>
+            <option value="user">Usuario</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+      </div>
+      <input type="hidden" id="m_uIndex">
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" onclick="closeModal('userModal')">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar Usuario</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div class="toasts" id="toasts"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

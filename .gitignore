@@ -1,0 +1,12 @@
+# === ARCHIVOS Y CARPETAS A IGNORAR ===
+node_modules/
+.env
+*.log
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

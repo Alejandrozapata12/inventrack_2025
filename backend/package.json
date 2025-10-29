@@ -1,0 +1,27 @@
+{
+  "name": "inventrack-backend",
+  "version": "1.0.0",
+  "description": "Backend para el sistema de gestión de inventarios Inventrack",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": ["inventory", "management", "nodejs", "express", "mysql", "sequelize"],
+  "author": "Inventrack Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.2.0",
+    "sequelize": "^6.37.3",
+    "mysql2": "^3.9.7",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+ }
+}

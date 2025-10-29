@@ -1,0 +1,827 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventrack - Iniciar Sesión</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input.error {
+            border-color: #ef4444;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .success-message {
+            color: #10b981;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .forgot-password a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            width: 90%;
+            max-width: 450px;
+            animation: modalSlideUp 0.4s ease-out;
+            position: relative;
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #f3f4f6;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #6b7280;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: #ef4444;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #667eea;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-subtitle {
+            color: #6b7280;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .user-input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .user-input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .user-input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .user-input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: scale(1.02);
+        }
+
+        .user-input-group input.error {
+            border-color: #ef4444;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .recovery-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .recovery-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .recovery-btn:active {
+            transform: translateY(0);
+        }
+
+        .recovery-btn.loading {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .recovery-btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .input-hint {
+            font-size: 0.8rem;
+            color: #6b7280;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        .back-to-login {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .back-to-login a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .back-to-login a:hover {
+            text-decoration: underline;
+        }
+
+        /* Orb styles */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.6), rgba(139, 92, 246, 0.3));
+            animation: float 6s ease-in-out infinite;
+            filter: blur(1px);
+            pointer-events: none;
+        }
+
+        .orb1 { 
+            width: 60px; 
+            height: 60px; 
+            top: 20%; 
+            left: 10%; 
+            animation-delay: 0s; 
+        }
+
+        .orb2 { 
+            width: 40px; 
+            height: 40px; 
+            top: 60%; 
+            left: 70%; 
+            animation-delay: 2s; 
+        }
+
+        .orb3 { 
+            width: 80px; 
+            height: 80px; 
+            top: 80%; 
+            left: 20%; 
+            animation-delay: 4s; 
+        }
+
+        .orb4 { 
+            width: 50px; 
+            height: 50px; 
+            top: 40%; 
+            left: 80%; 
+            animation-delay: 1s; 
+        }
+
+        .orb5 { 
+            width: 35px; 
+            height: 35px; 
+            top: 3%; 
+            left: 50%; 
+            animation-delay: 3s; 
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translate(0, 0) scale(1); 
+                opacity: 0.6;
+            }
+            33% { 
+                transform: translate(30px, -30px) scale(1.1); 
+                opacity: 0.8;
+            }
+            66% { 
+                transform: translate(-20px, 20px) scale(0.9); 
+                opacity: 0.4;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container, .modal {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .logo h1 {
+                font-size: 2rem;
+            }
+
+            .modal-title {
+                font-size: 1.3rem;
+            }
+
+            .orb1 { width: 40px; height: 40px; }
+            .orb2 { width: 30px; height: 30px; }
+            .orb3 { width: 50px; height: 50px; }
+            .orb4 { width: 35px; height: 35px; }
+            .orb5 { width: 25px; height: 25px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background orbs -->
+    <div class="bg-example bg3">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+        <div class="orb orb4"></div>
+        <div class="orb orb5"></div> 
+    </div>
+
+    <!-- Login Container -->
+    <div class="login-container">
+        <div class="logo">
+            <h1>📦 Inventrack</h1>
+            <p>Sistema de Gestión de Inventario</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email o Usuario</label>
+                <input type="email" id="email" name="email" required>
+                <div class="error-message" id="emailError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" required>
+                <div class="error-message" id="passwordError"></div>
+            </div>
+
+            <div class="success-message" id="successMessage"></div>
+
+            <button type="submit" class="login-btn">Iniciar Sesión</button>
+        </form>
+
+        <div class="forgot-password">
+            <a href="#" id="forgotPasswordLink">¿Olvidaste tu contraseña?</a>
+        </div>
+    </div>
+
+    <!-- Modal de Recuperación de Contraseña -->
+    <div class="modal-overlay" id="passwordRecoveryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-close" id="closeModal">×</button>
+                <div class="modal-icon">🔑</div>
+                <h2 class="modal-title">Recuperar Contraseña</h2>
+                <p class="modal-subtitle">
+                    Ingresa tu número de usuario y te enviaremos las instrucciones 
+                    para restablecer tu contraseña al correo registrado.
+                </p>
+            </div>
+
+            <form id="recoveryForm">
+                <div class="user-input-group">
+                    <label for="userNumber">Número de Usuario</label>
+                    <input 
+                        type="text" 
+                        id="userNumber" 
+                        name="userNumber" 
+                        placeholder="Ej: 12345"
+                        pattern="[0-9]*"
+                        inputmode="numeric"
+                        maxlength="10"
+                        required
+                    >
+                    <div class="input-hint">Solo números - proporcionado por tu administrador</div>
+                    <div class="error-message" id="userNumberError"></div>
+                </div>
+
+                <button type="submit" class="recovery-btn" id="sendRecoveryBtn">
+                    Enviar Instrucciones
+                </button>
+            </form>
+
+            <div class="back-to-login">
+                <a href="#" id="backToLogin">
+                    ← Volver al inicio de sesión
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Simulación de base de datos de usuarios
+        const userDatabase = {
+            '12345': {
+                email: 'admin@empresa.com',
+                name: 'Administrador',
+                role: 'admin'
+            },
+            '67890': {
+                email: 'empleado1@empresa.com',
+                name: 'Juan Pérez',
+                role: 'empleado'
+            },
+            '11111': {
+                email: 'empleado2@empresa.com',
+                name: 'María García',
+                role: 'empleado'
+            },
+            '22222': {
+                email: 'supervisor@empresa.com',
+                name: 'Carlos López',
+                role: 'supervisor'
+            },
+            '99999': {
+                email: 'demo@inventrack.com',
+                name: 'Usuario Demo',
+                role: 'demo'
+            }
+        };
+
+        // Referencias al DOM
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const passwordRecoveryModal = document.getElementById('passwordRecoveryModal');
+        const closeModal = document.getElementById('closeModal');
+        const backToLogin = document.getElementById('backToLogin');
+        const recoveryForm = document.getElementById('recoveryForm');
+        const userNumberInput = document.getElementById('userNumber');
+        const sendRecoveryBtn = document.getElementById('sendRecoveryBtn');
+        const loginForm = document.getElementById('loginForm');
+
+        // Event Listeners
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            openPasswordRecoveryModal();
+        });
+
+        closeModal.addEventListener('click', closePasswordRecoveryModal);
+        backToLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            closePasswordRecoveryModal();
+        });
+
+        passwordRecoveryModal.addEventListener('click', (e) => {
+            if (e.target === passwordRecoveryModal) {
+                closePasswordRecoveryModal();
+            }
+        });
+
+        // Validación en tiempo real del input numérico
+        userNumberInput.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            clearFieldError('userNumber');
+        });
+
+        // Formulario de recuperación
+        recoveryForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handlePasswordRecovery();
+        });
+
+        // Formulario de login
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            clearErrors();
+            Login(email, password);
+        });
+
+        // Funciones del modal
+        function openPasswordRecoveryModal() {
+            passwordRecoveryModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            userNumberInput.focus();
+        }
+
+        function closePasswordRecoveryModal() {
+            passwordRecoveryModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            recoveryForm.reset();
+            clearFieldError('userNumber');
+            resetRecoveryButton();
+        }
+
+        // Manejo de recuperación de contraseña
+        async function handlePasswordRecovery() {
+            const userNumber = userNumberInput.value.trim();
+            
+            if (!userNumber) {
+                showFieldError('userNumber', 'Por favor ingresa tu número de usuario');
+                return;
+            }
+
+            if (userNumber.length < 4) {
+                showFieldError('userNumber', 'El número de usuario debe tener al menos 4 dígitos');
+                return;
+            }
+
+            setRecoveryButtonLoading(true);
+
+            try {
+                // Simular llamada a API
+                await simulatePasswordRecovery(userNumber);
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                setRecoveryButtonLoading(false);
+            }
+        }
+
+        // Simulación de envío de recuperación
+        async function simulatePasswordRecovery(userNumber) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const user = userDatabase[userNumber];
+                    
+                    if (user) {
+                        closePasswordRecoveryModal();
+                        
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Correo Enviado!',
+                            html: `
+                                <div style="text-align: left; padding: 1rem;">
+                                    <p><strong>✅ Instrucciones enviadas a:</strong></p>
+                                    <p style="background: #f3f4f6; padding: 0.5rem; border-radius: 5px; margin: 0.5rem 0;">
+                                        📧 ${user.email}
+                                    </p>
+                                    <p><strong>👤 Usuario:</strong> ${user.name}</p>
+                                    <p><strong>🔢 ID:</strong> ${userNumber}</p>
+                                    <hr style="margin: 1rem 0;">
+                                    <p style="font-size: 0.9rem; color: #6b7280;">
+                                        Revisa tu bandeja de entrada y sigue las instrucciones del correo. 
+                                        Si no lo encuentras, verifica tu carpeta de spam.
+                                    </p>
+                                </div>
+                            `,
+                            confirmButtonText: 'Entendido',
+                            confirmButtonColor: '#667eea',
+                            width: '500px'
+                        });
+
+                        // Simular envío real de correo (aquí iría la integración con el servicio de email)
+                        simulateEmailSending(user);
+                        
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Usuario No Encontrado',
+                            html: `
+                                <div style="text-align: center; padding: 1rem;">
+                                    <p>No encontramos un usuario con el ID <strong>${userNumber}</strong></p>
+                                    <hr style="margin: 1rem 0;">
+                                    <p style="font-size: 0.9rem; color: #6b7280;">
+                                        Verifica que el número sea correcto o contacta al administrador del sistema.
+                                    </p>
+                                </div>
+                            `,
+                            confirmButtonText: 'Intentar de Nuevo',
+                            confirmButtonColor: '#ef4444'
+                        });
+                    }
+                    
+                    resolve();
+                }, 2000); // Simular tiempo de procesamiento
+            });
+        }
+
+        // Simulación de envío de email
+        function simulateEmailSending(user) {
+            console.log(`
+                ============ EMAIL SIMULADO ============
+                Para: ${user.email}
+                Asunto: Recuperación de contraseña - Inventrack
+                
+                Hola ${user.name},
+                
+                Recibimos una solicitud para restablecer la contraseña de tu cuenta.
+                
+                Usuario: ${user.name}
+                Rol: ${user.role}
+                
+                Para restablecer tu contraseña, haz clic en el siguiente enlace:
+                https://inventrack.com/reset-password?token=abc123xyz789
+                
+                Si no solicitaste este cambio, ignora este correo.
+                
+                Saludos,
+                Equipo de Inventrack
+                ========================================
+            `);
+        }
+
+        // Funciones de utilidad
+        function setRecoveryButtonLoading(loading) {
+            if (loading) {
+                sendRecoveryBtn.classList.add('loading');
+                sendRecoveryBtn.disabled = true;
+                sendRecoveryBtn.textContent = 'Enviando...';
+            } else {
+                resetRecoveryButton();
+            }
+        }
+
+        function resetRecoveryButton() {
+            sendRecoveryBtn.classList.remove('loading');
+            sendRecoveryBtn.disabled = false;
+            sendRecoveryBtn.textContent = 'Enviar Instrucciones';
+        }
+
+        function showFieldError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(fieldId + 'Error');
+            
+            field.classList.add('error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function clearFieldError(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(fieldId + 'Error');
+            
+            field.classList.remove('error');
+            errorElement.style.display = 'none';
+            errorElement.textContent = '';
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+                el.textContent = '';
+            });
+            document.querySelectorAll('input').forEach(i => i.classList.remove('error'));
+        }
+
+        // Función de Login 
+        function Login(email, password) {
+    email = email.trim().toLowerCase();
+    password = password.trim();
+
+    Swal.fire({
+        title: 'Iniciando sesión...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    setTimeout(() => {
+        if (
+            (email === 'admin@inventrack.com' && password === 'admin123') ||
+            (email === 'empleado@inventrack.com' && password === 'emp123')
+        ) {
+            let userType, redirectUrl;
+
+            if (email === 'admin@inventrack.com') {
+                userType = 'Administrador';
+                redirectUrl = 'frontend/admin/index.html';
+            } else {
+                userType = 'Empleado';
+                redirectUrl = 'frontend/empleado/index.html';
+            }
+
+            Swal.fire({
+                icon: 'success',
+                title: `Bienvenido ${userType}`,
+                text: 'Redirigiendo...',
+                timer: 1000,
+                showConfirmButton: false
+            });
+
+            setTimeout(() => {
+                window.location.href = redirectUrl;
+            }, 2000);
+
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Credenciales incorrectas'
+            });
+        }
+    }, 1000);
+}
+
+
+        // Cerrar modal con ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && passwordRecoveryModal.classList.contains('active')) {
+                closePasswordRecoveryModal();
+            }
+        });
+    </script>
+</body>
+</html>
